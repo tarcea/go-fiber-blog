@@ -18,12 +18,13 @@ func init() {
 	models.SyncDb()
 }
 
-func main() {
+func Setup() *fiber.App {
 	engine := html.New("./views", ".html")
 
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
+
 	app.Use(cors.New())
 	app.Static("/", "./public")
 
@@ -31,5 +32,12 @@ func main() {
 	app.Get("/posts/:id", middlewares.M, controllers.PostsView)
 	app.Post("/posts", controllers.PostsAdd)
 
+	return app
+}
+
+func main() {
+
+	app := Setup()
 	app.Listen(":" + os.Getenv("PORT"))
+
 }
