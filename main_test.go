@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"testing"
 
@@ -14,21 +16,21 @@ func TestPostView(t *testing.T) {
 		route         string
 		expectedError bool
 		expectedCode  int
-		// expectedBody  string
+		expectedBody  string
 	}{
 		{
 			description:   "posts index route",
 			route:         "/posts",
 			expectedError: false,
 			expectedCode:  200,
-			// expectedBody:  "OK",
+			// expectedBody:  `{"message":"record not found"}`,
 		},
 		{
 			description:   "non existing route",
 			route:         "/posts/999",
 			expectedError: false,
 			expectedCode:  400,
-			// expectedBody:  "Cannot GET /i-dont-exist",
+			// expectedBody:  `{"message":"record not found"}`,
 		},
 	}
 
@@ -62,8 +64,8 @@ func TestPostView(t *testing.T) {
 		assert.Equalf(t, test.expectedCode, res.StatusCode, test.description)
 
 		// Read the response body
-		// body, err := ioutil.ReadAll(res.Body)
-		// fmt.Println(body)
+		body, err := ioutil.ReadAll(res.Body)
+		fmt.Println(string(body))
 		// Reading the response body should work everytime, such that
 		// the err variable should be nil
 		assert.Nilf(t, err, test.description)
