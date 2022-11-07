@@ -1,0 +1,35 @@
+package main
+
+import (
+	"os"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/template/html"
+	"github.com/tarcea/go-fiber-blog/controllers"
+	"github.com/tarcea/go-fiber-blog/initializers"
+	"github.com/tarcea/go-fiber-blog/middlewares"
+	"github.com/tarcea/go-fiber-blog/models"
+)
+
+func init() {
+	initializers.LoadEnvVariables()
+	initializers.ConnectToDatabase()
+	models.SyncDb()
+}
+
+func main() {
+	engine := html.New("./views", ".html")
+
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
+	app.Use(cors.New())
+	app.Static("/", "./public")
+
+	app.Get("/posts", middlewares.M, controllers.PostsIndex)
+	app.Get("/posts/:id", middlewares.M, controllers.PostsView)
+	app.Post("/posts", controllers.PostsAdd)
+
+	app.Listen(":" + os.Getenv("PORT"))
+}
