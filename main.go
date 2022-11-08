@@ -33,6 +33,8 @@ func Setup() *fiber.App {
 	app.Post("/posts", controllers.PostsAdd)
 	app.Delete("/posts/:id", controllers.PostsDelete)
 
+	app.Post("/users/signup", controllers.SignUp)
+
 	return app
 }
 
