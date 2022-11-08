@@ -70,3 +70,11 @@ func GetPostById(res chan *Post, postId string) {
 func DeletePost(postId string) {
 	initializers.DB.Delete(&Post{}, postId)
 }
+
+func UpdatePost(res chan *Post, postId string) {
+	initializers.DB.Delete(&Post{}, postId)
+}
+
+func AddPost(post *Post) {
+	initializers.DB.Create(post)
+}

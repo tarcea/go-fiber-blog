@@ -78,21 +78,13 @@ func Login(c *fiber.Ctx) error {
 		return c.Status(400).JSON(map[string]string{"message": tokenError.Error()})
 	}
 
-	// set a cookie and send the cookie back
-	// cookie := new(fiber.Cookie)
-	// cookie.Name = "token"
-	// cookie.Value = tokenString
-	// cookie.Expires = time.Now().Add(24 * time.Hour)
-	// cookie.Secure = true
-	// cookie.HTTPOnly = true
-	// cookie.SameSite = "lax"
-	// c.Cookie(cookie)
-
 	c.Cookie(&fiber.Cookie{
 		Name:     "token",
 		Value:    tokenString,
 		Expires:  time.Now().Add(24 * time.Hour),
 		SameSite: "lax",
+		Secure:   true,
+		HTTPOnly: true,
 	})
 
 	return c.Status(200).JSON(map[string]string{"message": "Ok"})

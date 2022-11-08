@@ -72,7 +72,17 @@ func PostsAdd(c *fiber.Ctx) error {
 
 	initializers.DB.Create(&post)
 
-	return c.JSON(post)
+	p := *post
+	var resp models.ResponsePost
+
+	resp.ID = p.ID
+	resp.Body = p.Body
+	resp.Published = p.Published
+	resp.Title = p.Title
+	resp.UserId = p.UserId
+	resp.Author = p.User.Username
+
+	return c.JSON(resp)
 }
 
 func PostsDelete(c *fiber.Ctx) error {
@@ -88,6 +98,23 @@ func PostsDelete(c *fiber.Ctx) error {
 	}
 
 	models.DeletePost(postId)
+
+	return c.JSON(post)
+}
+
+func PostsUpdate(c *fiber.Ctx) error {
+	postId := c.Params("id")
+
+	err := errors.New("record not found")
+	responseChannel := make(chan *models.Post)
+	go models.GetPostById(responseChannel, postId)
+	post := <-responseChannel
+
+	if post.ID == 0 {
+		return c.Status(400).JSON(map[string]string{"message": err.Error()})
+	}
+
+	// models.UpdatePost(postId)
 
 	return c.JSON(post)
 }
