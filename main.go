@@ -31,6 +31,7 @@ func Setup() *fiber.App {
 	app.Get("/posts", middlewares.M, controllers.PostsIndex)
 	app.Get("/posts/:id", middlewares.M, controllers.PostsView)
 	app.Post("/posts", controllers.PostsAdd)
+	app.Delete("/posts/:id", controllers.PostsDelete)
 
 	return app
 }

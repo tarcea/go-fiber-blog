@@ -30,6 +30,7 @@ func PostsIndex(c *fiber.Ctx) error {
 		resp.Published = p.Published
 		resp.Title = p.Title
 		resp.UserId = p.UserId
+		resp.Author = p.User.Username
 		r = append(r, resp)
 	}
 
@@ -56,6 +57,7 @@ func PostsView(c *fiber.Ctx) error {
 	resp.Published = p.Published
 	resp.Title = p.Title
 	resp.UserId = p.UserId
+	resp.Author = p.User.Username
 
 	return c.JSON(resp)
 }
@@ -69,6 +71,23 @@ func PostsAdd(c *fiber.Ctx) error {
 	}
 
 	initializers.DB.Create(&post)
+
+	return c.JSON(post)
+}
+
+func PostsDelete(c *fiber.Ctx) error {
+	postId := c.Params("id")
+
+	err := errors.New("record not found")
+	responseChannel := make(chan *models.Post)
+	go models.GetPostById(responseChannel, postId)
+	post := <-responseChannel
+
+	if post.ID == 0 {
+		return c.Status(400).JSON(map[string]string{"message": err.Error()})
+	}
+
+	models.DeletePost(postId)
 
 	return c.JSON(post)
 }

@@ -20,6 +20,7 @@ type ResponsePost struct {
 	Body      string `json:"body"`
 	Published bool   `json:"published"`
 	UserId    uint   `json:"userId"`
+	Author    string `json:"author"`
 }
 
 func GetAllPublishedPosts(res chan *[]Post) {
@@ -27,6 +28,7 @@ func GetAllPublishedPosts(res chan *[]Post) {
 
 	initializers.DB.
 		Model(&Post{}).
+		Order("created_at desc").
 		Where("published = ?", "true").
 		Preload("User").
 		Find(&posts)
@@ -38,6 +40,7 @@ func GetAllPublishedPostsByUser(res chan *[]Post, userId int) {
 	var posts []Post
 	initializers.DB.
 		Where("published = ? AND user_id = ?", "true", userId).
+		Order("created_at desc").
 		Preload("User").
 		Find(&posts)
 
@@ -46,9 +49,10 @@ func GetAllPublishedPostsByUser(res chan *[]Post, userId int) {
 
 func GetPostById(res chan *Post, postId string) {
 	type response struct {
-		ID    string
-		Title string
-		Body  string
+		ID     string
+		Title  string
+		Body   string
+		Author string `json:"author"`
 	}
 	var resp response
 	var post *Post
@@ -61,4 +65,8 @@ func GetPostById(res chan *Post, postId string) {
 
 	res <- post
 
+}
+
+func DeletePost(postId string) {
+	initializers.DB.Delete(&Post{}, postId)
 }
