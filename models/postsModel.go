@@ -23,6 +23,12 @@ type ResponsePost struct {
 	Author    string `json:"author"`
 }
 
+type UpdatedPost struct {
+	Title     string `json:"title"`
+	Body      string `json:"body"`
+	Published bool   `json:"published"`
+}
+
 func GetAllPublishedPosts(res chan *[]Post) {
 	var posts []Post
 
@@ -48,6 +54,7 @@ func GetAllPublishedPostsByUser(res chan *[]Post, userId int) {
 }
 
 func GetPostById(res chan *Post, postId string) {
+
 	type response struct {
 		ID     string
 		Title  string
@@ -68,13 +75,14 @@ func GetPostById(res chan *Post, postId string) {
 }
 
 func DeletePost(postId string) {
-	initializers.DB.Delete(&Post{}, postId)
-}
-
-func UpdatePost(res chan *Post, postId string) {
-	initializers.DB.Delete(&Post{}, postId)
+	// Unscoped() used to permanently delete from DB, otherwise deleted_at is enabled and the entry is just soft deleted
+	initializers.DB.Unscoped().Delete(&Post{}, postId)
 }
 
 func AddPost(post *Post) {
 	initializers.DB.Create(post)
+}
+
+func UpdatePost(post *Post, updatedPost *UpdatedPost) {
+	initializers.DB.Model(&post).Updates(&Post{Title: updatedPost.Title, Body: updatedPost.Body, Published: updatedPost.Published})
 }

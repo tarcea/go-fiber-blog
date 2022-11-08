@@ -115,7 +115,13 @@ func PostsUpdate(c *fiber.Ctx) error {
 		return c.Status(400).JSON(map[string]string{"message": err.Error()})
 	}
 
-	// models.UpdatePost(postId)
+	var body *models.UpdatedPost
+
+	if err := c.BodyParser(&body); err != nil {
+		return err
+	}
+
+	models.UpdatePost(post, body)
 
 	return c.JSON(post)
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/gofiber/template/html"
 	"github.com/tarcea/go-fiber-blog/controllers"
 	"github.com/tarcea/go-fiber-blog/initializers"
-	"github.com/tarcea/go-fiber-blog/middlewares"
 	"github.com/tarcea/go-fiber-blog/models"
 )
 
@@ -28,10 +27,11 @@ func Setup() *fiber.App {
 	app.Use(cors.New())
 	app.Static("/", "./public")
 
-	app.Get("/posts", middlewares.M, controllers.PostsIndex)
-	app.Get("/posts/:id", middlewares.M, controllers.PostsView)
+	app.Get("/posts", controllers.PostsIndex)
+	app.Get("/posts/:id", controllers.PostsView)
 	app.Post("/posts", controllers.PostsAdd)
 	app.Delete("/posts/:id", controllers.PostsDelete)
+	app.Patch("/posts/:id", controllers.PostsUpdate)
 
 	app.Post("/users/signup", controllers.SignUp)
 	app.Post("/users/login", controllers.Login)
