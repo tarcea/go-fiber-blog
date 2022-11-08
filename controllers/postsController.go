@@ -64,9 +64,9 @@ func PostsView(c *fiber.Ctx) error {
 
 func PostsAdd(c *fiber.Ctx) error {
 
-	post := new(models.Post)
+	var post *models.Post
 
-	if err := c.BodyParser(post); err != nil {
+	if err := c.BodyParser(&post); err != nil {
 		return err
 	}
 
@@ -74,13 +74,14 @@ func PostsAdd(c *fiber.Ctx) error {
 
 	p := *post
 	var resp models.ResponsePost
+	user := models.GetUserById(int(p.UserId))
 
 	resp.ID = p.ID
 	resp.Body = p.Body
 	resp.Published = p.Published
 	resp.Title = p.Title
 	resp.UserId = p.UserId
-	resp.Author = p.User.Username
+	resp.Author = user.Username
 
 	return c.JSON(resp)
 }
