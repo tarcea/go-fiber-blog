@@ -26,7 +26,7 @@ func Setup() *fiber.App {
 	})
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000",
+		AllowOrigins:     os.Getenv("CLIENT_URL"),
 		AllowCredentials: true,
 	}))
 	app.Static("/", "./public")
