@@ -42,7 +42,7 @@ func GetAllPublishedPosts(res chan *[]Post) {
 	res <- &posts
 }
 
-func GetAllPublishedPostsByUser(res chan *[]Post, userId int) {
+func GetPublishedPostsByUserId(res chan *[]Post, userId int) {
 	var posts []Post
 	initializers.DB.
 		Where("published = ? AND user_id = ?", "true", userId).

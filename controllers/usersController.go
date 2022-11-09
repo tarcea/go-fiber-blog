@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -93,7 +94,9 @@ func Login(c *fiber.Ctx) error {
 func Validate(c *fiber.Ctx) error {
 	user := c.Locals("user")
 	email := user.(models.User).Email
-	return c.JSON(map[string]string{"user": email})
+	i := user.(models.User).ID
+	id := strconv.FormatInt(int64(i), 10)
+	return c.JSON(map[string]string{"user": email, "uid": id})
 }
 
 func Logout(c *fiber.Ctx) error {
