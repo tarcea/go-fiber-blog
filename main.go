@@ -5,7 +5,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/template/html"
 	"github.com/tarcea/go-fiber-blog/controllers"
 	"github.com/tarcea/go-fiber-blog/initializers"
 	"github.com/tarcea/go-fiber-blog/middlewares"
@@ -19,17 +18,13 @@ func init() {
 }
 
 func Setup() *fiber.App {
-	engine := html.New("./views", ".html")
 
-	app := fiber.New(fiber.Config{
-		Views: engine,
-	})
+	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     os.Getenv("CLIENT_URL"),
 		AllowCredentials: true,
 	}))
-	app.Static("/", "./public")
 
 	app.Get("/posts", controllers.PostsIndex)
 	app.Get("/posts/:id", controllers.PostsView)
@@ -47,8 +42,6 @@ func Setup() *fiber.App {
 }
 
 func main() {
-
 	app := Setup()
 	app.Listen(":" + os.Getenv("PORT"))
-
 }
