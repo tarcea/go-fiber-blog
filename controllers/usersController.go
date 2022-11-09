@@ -78,15 +78,30 @@ func Login(c *fiber.Ctx) error {
 		return c.Status(400).JSON(map[string]string{"message": tokenError.Error()})
 	}
 
+	c.Set("access-control-expose-headers", "Set-Cookie")
+
 	c.Cookie(&fiber.Cookie{
-		Name:     "token",
-		Value:    tokenString,
-		Expires:  time.Now().Add(24 * time.Hour),
-		SameSite: "lax",
-		Secure:   true,
-		HTTPOnly: true,
+		Name:    "token",
+		Value:   tokenString,
+		Expires: time.Now().Add(24 * time.Hour),
 	})
 
 	return c.Status(200).JSON(map[string]string{"message": "Ok"})
 
+}
+
+func Validate(c *fiber.Ctx) error {
+	user := c.Locals("user")
+	email := user.(models.User).Email
+	return c.JSON(map[string]string{"user": email})
+}
+
+func Logout(c *fiber.Ctx) error {
+	c.Set("access-control-expose-headers", "Set-Cookie")
+	c.Cookie(&fiber.Cookie{
+		Name:    "token",
+		Expires: time.Now().Add(-(time.Hour * 2)),
+	})
+
+	return c.Status(200).JSON(map[string]string{"message": "Ok, clear"})
 }

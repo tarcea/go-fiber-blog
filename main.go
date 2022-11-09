@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/template/html"
 	"github.com/tarcea/go-fiber-blog/controllers"
 	"github.com/tarcea/go-fiber-blog/initializers"
+	"github.com/tarcea/go-fiber-blog/middlewares"
 	"github.com/tarcea/go-fiber-blog/models"
 )
 
@@ -24,7 +25,10 @@ func Setup() *fiber.App {
 		Views: engine,
 	})
 
-	app.Use(cors.New())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://localhost:3000",
+		AllowCredentials: true,
+	}))
 	app.Static("/", "./public")
 
 	app.Get("/posts", controllers.PostsIndex)
@@ -35,6 +39,9 @@ func Setup() *fiber.App {
 
 	app.Post("/users/signup", controllers.SignUp)
 	app.Post("/users/login", controllers.Login)
+	app.Post("/users/logout", controllers.Logout)
+
+	app.Get("/validate", middlewares.CheckToken, controllers.Validate)
 
 	return app
 }
