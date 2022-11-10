@@ -34,10 +34,10 @@ func SignUp(c *fiber.Ctx) error {
 	user := models.User{Email: body.Email, Password: string(hash), Username: body.Username}
 
 	// check if the email was already used
-	var u = new(models.User)
-	initializers.DB.First(&user, "email = ?", body.Email)
+	var u models.User
+	initializers.DB.First(&u, "email = ?", body.Email)
 
-	if u.ID == 0 {
+	if u.ID != 0 {
 		return c.Status(400).JSON(map[string]string{"message": "email already used"})
 	}
 
