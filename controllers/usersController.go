@@ -37,6 +37,29 @@ func SignUp(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.Status(400).JSON(map[string]string{"message": result.Error.Error()})
 	}
+
+	// create the token
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": user.ID,
+		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+	})
+
+	// Sign and get the complete encoded token as a string using the secret
+	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+	tokenError := errors.New("failed to create token")
+
+	if err != nil {
+		return c.Status(400).JSON(map[string]string{"message": tokenError.Error()})
+	}
+
+	c.Set("access-control-expose-headers", "Set-Cookie")
+
+	c.Cookie(&fiber.Cookie{
+		Name:    "token",
+		Value:   tokenString,
+		Expires: time.Now().Add(24 * time.Hour),
+	})
+
 	return c.JSON(user)
 }
 
