@@ -127,8 +127,10 @@ func Validate(c *fiber.Ctx) error {
 	user := c.Locals("user")
 	email := user.(models.User).Email
 	i := user.(models.User).ID
+	username := user.(models.User).Username
+
 	id := strconv.FormatInt(int64(i), 10)
-	return c.JSON(map[string]string{"user": email, "uid": id})
+	return c.JSON(map[string]string{"user": email, "uid": id, "username": username})
 }
 
 func Logout(c *fiber.Ctx) error {
