@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strconv"
 	"time"
@@ -32,9 +33,17 @@ func SignUp(c *fiber.Ctx) error {
 
 	user := models.User{Email: body.Email, Password: string(hash), Username: body.Username}
 
-	result := initializers.DB.Create(&user)
+	// check if the email was already used
+	var u = new(models.User)
+	initializers.DB.First(&user, "email = ?", body.Email)
 
+	if u.ID == 0 {
+		return c.Status(400).JSON(map[string]string{"message": "email already used"})
+	}
+
+	result := initializers.DB.Create(&user)
 	if result.Error != nil {
+		fmt.Println("rer", result.Error.Error())
 		return c.Status(400).JSON(map[string]string{"message": result.Error.Error()})
 	}
 
